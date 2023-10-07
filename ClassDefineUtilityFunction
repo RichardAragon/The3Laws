@@ -1,0 +1,21 @@
+def utility_function(state, action):
+    # This is a simple example of a utility function.
+    return sum([state["human_happiness"], state["robot_happiness"]])
+
+robot = Robot(utility_function)
+
+# Define the current state of the world.
+state = {
+    "human_order": "Move the object.",
+    "human_happiness": 10,
+    "robot_happiness": 5,
+}
+
+# Define a list of possible actions.
+actions = ["Move the object.", "Do nothing."]
+
+# Make the robot decide on an action.
+action = robot.decide(state, actions)
+
+# Print the chosen action.
+print(action)
