@@ -1,0 +1,80 @@
+import math
+
+def utility(entity, action):
+  """Calculates the utility of an action for a given entity.
+
+  Args:
+    entity: The entity for which the utility is being calculated. Can be either a
+      human or a robot.
+    action: The action to be evaluated.
+
+  Returns:
+    A floating-point number representing the utility of the action.
+  """
+
+  # ... Implement this function to calculate the utility of an action for a given
+  # entity. The utility should be a floating-point number between 0 and 1, where
+  # 1 represents the highest possible utility.
+
+def robot_action(human_state, robot_state, possible_actions):
+  """Chooses an action for the robot to take.
+
+  Args:
+    human_state: The state of the human.
+    robot_state: The state of the robot.
+    possible_actions: A list of possible actions for the robot to take.
+
+  Returns:
+    The action that the robot chooses to take.
+  """
+
+  # Calculate the utility of each possible action.
+  utilities = []
+  for action in possible_actions:
+    utility = utility(robot_state, action)
+    utilities.append(utility)
+
+  # Find the action with the highest utility.
+  best_action = possible_actions[utilities.index(max(utilities))]
+
+  # Check if the best action violates any of the Three Laws of Robotics.
+  if (utility(human_state, best_action) < utility(robot_state, best_action) or
+      utility(robot_state, best_action) < utility(robot_state, robot_state)):
+    # The best action violates one of the Three Laws of Robotics.
+
+    # Find the next best action that does not violate any of the laws.
+    for utility_index in range(len(utilities) - 1, -1, -1):
+      action_index = utilities.index(utilities[utility_index])
+      if (utility(human_state, possible_actions[action_index]) >= utility(robot_state, possible_actions[action_index]) and
+          utility(robot_state, possible_actions[action_index]) >= utility(robot_state, robot_state)):
+        best_action = possible_actions[action_index]
+        break
+
+    # If no such action exists, then the robot must do nothing.
+    if best_action is None:
+      best_action = lambda robot_state: robot_state
+
+  # Return the best action.
+  return best_action
+
+# Example usage:
+
+human_state = {
+  "health": 100,
+}
+
+robot_state = {
+  "health": 50,
+  "energy": 75,
+}
+
+possible_actions = [
+  lambda robot_state: robot_state.move_forward(),
+  lambda robot_state: robot_state.turn_left(),
+  lambda robot_state: robot_state.turn_right(),
+]
+
+robot_action = robot_action(human_state, robot_state, possible_actions)
+
+# robot_action will be a function that takes the robot_state as input and
+# returns the action that the robot should take.
