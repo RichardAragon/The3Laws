@@ -1,0 +1,55 @@
+import math
+
+class Robot:
+    def __init__(self, utility_function):
+        self.utility_function = utility_function
+
+    def decide(self, state, actions):
+        # Get the utility of each action.
+        utilities = []
+        for action in actions:
+            utility = self.utility_function(state, action)
+            utilities.append(utility)
+
+        # Choose the action with the highest utility.
+        best_action = actions[utilities.index(max(utilities))]
+
+        # Check if the best action violates any of the Three Laws.
+        if self.violates_law_1(state, best_action):
+            return None
+        if self.violates_law_2(state, best_action):
+            return None
+        if self.violates_law_3(state, best_action):
+            return None
+
+        # Return the best action.
+        return best_action
+
+    def violates_law_1(self, state, action):
+        # Check if the action would harm a human.
+        return self.utility_function(state, action) < self.utility_function(state, None)
+
+    def violates_law_2(self, state, action):
+        # Check if the action is obeying a human order.
+        if state.has_human_order():
+            if action != state.get_human_order():
+                return True
+        return False
+
+    def violates_law_3(self, state, action):
+        # Check if the action would protect the robot's own existence.
+        return self.utility_function(state, action) < self.utility_function(state, None)
+
+# Example usage:
+robot = Robot(utility_function)
+state = State()
+actions = ["move_forward", "turn_left", "turn_right"]
+
+action = robot.decide(state, actions)
+
+if action is not None:
+    # Execute the action.
+    state.execute(action)
+else:
+    # No action can be taken without violating the Three Laws.
+    pass
