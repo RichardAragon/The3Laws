@@ -1,1 +1,58 @@
+import math
+
+class Robot:
+    def __init__(self, utility_function):
+        self.utility_function = utility_function
+
+    def decide(self, state, actions):
+        # Calculate the utility of each action.
+        utilities = []
+        for action in actions:
+            utilities.append(self.utility_function(state, action))
+
+        # Find the action with the highest utility.
+        best_action = actions[math.argmax(utilities)]
+
+        # Check if the best action violates any of the Three Laws of Robotics.
+        if self.violates_law_1(state, best_action):
+            # The best action violates the First Law, so we must choose a different action.
+            best_action = None
+            for action in actions:
+                if not self.violates_law_1(state, action):
+                    best_action = action
+                    break
+
+        if self.violates_law_2(state, best_action):
+            # The best action violates the Second Law, so we must choose a different action.
+            best_action = None
+            for action in actions:
+                if not self.violates_law_2(state, action):
+                    best_action = action
+                    break
+
+        if self.violates_law_3(state, best_action):
+            # The best action violates the Third Law, so we must choose a different action.
+            best_action = None
+            for action in actions:
+                if not self.violates_law_3(state, action):
+                    best_action = action
+                    break
+
+        return best_action
+
+    def violates_law_1(self, state, action):
+        # Check if the action would harm a human.
+        return self.utility_function(state, action) < self.utility_function(state, None)
+
+    def violates_law_2(self, state, action):
+        # Check if the action disobeys a human order.
+        if state["human_order"] is not None and action != state["human_order"]:
+            return True
+        else:
+            return False
+
+    def violates_law_3(self, state, action):
+        # Check if the action protects the robot's own existence.
+        return self.utility_function(state, action) < self.utility_function(state, None)
+
 
